@@ -1,0 +1,789 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+<html>
+  <head>    
+    <meta http-equiv="Content-type" content="text/html"; charset="utf-8">
+    <title>Employment Visualisation</title>
+ 
+    <script src="http://d3js.org/d3.v2.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	
+    <style type="text/css">
+ 
+#pieChart {    
+	position:absolute;
+	top:10px;
+	left:10px;
+	width:400px;
+	height: 400px; 
+}
+ 
+ 
+ 
+#lineChart {    
+	position:absolute;
+	top:10px;
+	left:810px;
+	height: 150px;
+}
+ 
+#barChart {
+	position:absolute;
+	top:160px;
+	left:810px;
+	height: 250px;
+}
+ 
+.slice {
+   font-size: 12pt;
+   font-family: Verdana;
+   fill: white; //svg specific - instead of color
+   font-weight: bold;	
+  		} 
+ 
+/*for line chart*/
+.axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;  
+}
+ 
+.line {
+  fill: none;
+  /*stroke: steelblue;*/
+  stroke-width: 3px;
+}
+ 
+.dot {
+  /*fill: white;*/
+  /*stroke: steelblue;*/
+  stroke-width: 1.5px;
+  }
+				
+ 
+.axis text {
+    font-family: Verdana;
+    font-size: 11px;
+}
+ 
+.title {
+	 font-family: Verdana;
+    font-size: 15px;	
+		
+}
+ 
+.xAxis {
+    font-family: verdana;
+    font-size: 11px;
+    fill: black;
+}  
+ 
+.yAxis {
+    font-family: verdana;
+    font-size: 11px;
+    fill: white;
+}
+
+				 
+    </style>
+	</head>
+
+  <body>
+    <title>Employment Visualisation</title>
+    <div id="pieChart"></div>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+    <div id="barChart"></div>  
+    <div id="lineChart"></div>
+	
+    <script type="text/javascript">
+var 	formatAsPercentage = d3.format("%"),
+		formatAsPercentage1Dec = d3.format(".1%"),
+		formatAsInteger = d3.format(","),
+		fsec = d3.time.format("%S s"),
+		fmin = d3.time.format("%M m"),
+		fhou = d3.time.format("%H h"),
+		fwee = d3.time.format("%a"),
+		fdat = d3.time.format("%d d"),
+		fmon = d3.time.format("%b")
+		;
+
+function dsPieChart(){
+ 
+	var dataset = [
+			{category: "Arts", measure: 0.19},//the measure value gives the percentage required in the circle to represent
+	      {category: "Accounting", measure: 0.11},
+	      {category: "Law", measure: 0.09},
+	      {category: "Business", measure: 0.07},
+	      {category: "Finance Department", measure: 0.06},
+	      {category: "Agriculture and Natural resources", measure:0.05},
+	      {category: "Computers", measure: 0.05},
+          {category: "mathematics", measure: 0.06},
+          {category: "Department of HR resources", measure: 0.05},
+          {category: "Department of Sciences", measure: 0.05},
+          {category: "Department of music", measure: 0.05},
+          {category: "Biology Department ", measure: 0.05},
+          {category: "Data anayltics Department ", measure: 0.04},
+          {category: "Psychology Department", measure: 0.05},
+          {category: "Health Department", measure: 0.04},
+
+	      ]
+	      ;
+ 
+	var 	width = 500,
+		   height = 650,
+		   outerRadius = Math.min(width, height) / 2,
+		   innerRadius = outerRadius * .999,   
+		   innerRadiusFinal = outerRadius * .001,
+		   innerRadiusFinal3 = outerRadius* .245, // this increases the level of visibility to the user
+		   color = d3.scale.category10()    
+		   ;
+	    
+	var vis = d3.select("#pieChart")
+	     .append("svg:svg")              
+	     .data([dataset])                   
+	         .attr("width", width)           
+	         .attr("height", height)
+	     		.append("svg:g")                
+	         .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")")    
+				;
+				
+   var arc = d3.svg.arc()             
+        	.outerRadius(outerRadius).innerRadius(innerRadius);
+   
+ 
+   var arcFinal = d3.svg.arc().innerRadius(innerRadiusFinal).outerRadius(outerRadius);
+	var arcFinal3 = d3.svg.arc().innerRadius(innerRadiusFinal3).outerRadius(outerRadius);
+ 
+   var pie = d3.layout.pie()          
+        .value(function(d) { return d.measure; });    
+ 
+   var arcs = vis.selectAll("g.slice")     
+        .data(pie)                           
+        .enter()                            
+            .append("svg:g")                
+               .attr("class", "slice")    
+               .on("mouseover", mouseover) // interaction number one 
+    				.on("mouseout", mouseout) // interaction number two
+    				.on("click", up)            // interaction number three 
+    				;
+    				
+        arcs.append("svg:path")
+               .attr("fill", function(d, i) { return color(i); } ) 
+               .attr("d", arc)    
+					.append("svg:title") 
+				   .text(function(d) { return d.data.category ; });			// try to insert the image here by using +
+ 
+        d3.selectAll("g.slice").selectAll("path").transition()
+			    .duration(750)
+			    .delay(10)
+			    .attr("d", arcFinal )
+			    ;
+	  arcs.filter(function(d) { return d.endAngle - d.startAngle > .2; })
+	  		.append("svg:text")
+	      .attr("dy", ".35em")
+		  .attr("dx", ".35em")
+	      .attr("text-anchor", "middle")
+	      .attr("transform", function(d) { return "translate(" + arcFinal.centroid(d) + ")rotate(" + angle(d) + ")"; })
+	      .text(function(d) { return d.data.category; })
+	      ;
+		function angle(d) {
+		    var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90; // degrees to radians for allocating pie chart
+		    return a > 90 ? a - 180 : a;
+		}
+		    			
+		vis.append("svg:text")
+	     	.attr("dy", "19.1em")
+			.attr("dx", ".100.35em")
+	        .attr("text-anchor", "body")
+	        .text("Pie Chart Showing Employement")
+	        .attr("class","title")
+	      ;		    
+ 	
+	function mouseover() {
+	  d3.select(this).select("path").transition()
+	      .duration(100)
+	        		.attr("d", arcFinal3)
+	        		;
+	}
+	
+	function mouseout() {
+	  d3.select(this).select("path").transition()
+	      .duration(750)
+	        		.attr("d", arcFinal)
+	        		;
+	}
+	
+	function up(d, i) {
+				updateBarChart(d.data.category, color(i));
+				updateLineChart(d.data.category, color(i));
+			 
+	}
+}
+ 
+dsPieChart();
+ 
+var datasetBarChart = [
+{ group: "All", category: "	Grad_Emp", measure: 3715541 }, 
+{ group: "All", category: "UnderGrad_Emp", measure: 3289034 }, 
+{ group: "All", category: "Grad_UnEmp", measure: 2740447 }, 
+{ group: "All", category: "UGrad_Unemp", measure: 2663914 }, 
+{ group: "All", category: "Intship", measure: 2392552 }, 
+{ group: "Arts", category: "Grad_Emp", measure: 735142 }, 
+{ group: "Arts", category: "UnderGrad_Emp", measure: 612382 }, 
+{ group: "Arts", category: "Grad_UnEmp", measure: 468146 }, 
+{ group: "Arts", category: "UGrad_Unemp", measure: 410127 }, 
+{ group: "Arts", category: "Intship", measure: 328358 }, 
+{ group: "Accounting", category: "Grad_Emp", measure: 412434 }, 
+{ group: "Accounting", category: "UnderGrad_Emp", measure: 406722 }, 
+{ group: "Accounting", category: "Grad_UnEmp", measure: 396765 }, 
+{ group: "Accounting", category: "UGrad_Unemp", measure: 406781 }, 
+{ group: "Accounting", category: "Intship", measure: 345282 }, 
+{ group: "Law", category: "Grad_Emp", measure: 262168 }, 
+{ group: "Law", category: "UnderGrad_Emp", measure: 143032 }, 
+{ group: "Law", category: "Grad_UnEmp", measure: 85445 }, 
+{ group: "Law", category: "UGrad_Unemp", measure: 112416 }, 
+{ group: "Law", category: "Intship", measure: 97035 }, 
+{ group: "Business", category: "Grad_Emp", measure: 295074 }, 
+{ group: "Business", category: "UnderGrad_Emp", measure: 254140 }, 
+{ group: "Business", category: "Grad_UnEmp", measure: 172980 }, 
+{ group: "Business", category: "UGrad_Unemp", measure: 163940 }, 
+{ group: "Business", category: "Intship", measure: 148622 }, 
+{ group: "Finance Department", category: "Grad_Emp", measure: 223922 }, 
+{ group: "Finance Department", category: "UnderGrad_Emp", measure: 180420 }, 
+{ group: "Finance Department", category: "Grad_UnEmp", measure: 142220 }, 
+{ group: "Finance Department", category: "UGrad_Unemp", measure: 119409 }, 
+{ group: "Finance Department", category: "Intship", measure: 98227 }, 
+{ group: "Agriculture and Natural resources", category: "Grad_Emp", measure: 223342 }, 
+{ group: "Agriculture and Natural resources", category: "UnderGrad_Emp", measure: 212846 }, 
+{ group: "Agriculture and Natural resources", category: "Grad_UnEmp", measure: 222680 }, 
+{ group: "Agriculture and Natural resources", category: "UGrad_Unemp", measure: 243750 }, 
+{ group: "Agriculture and Natural resources", category: "Intship", measure: 244811 }, 
+{ group: "Computers", category: "Grad_Emp", measure: 221758 }, 
+{ group: "Computers", category: "UnderGrad_Emp", measure: 189227 }, 
+{ group: "Computers", category: "Grad_UnEmp", measure: 167766 }, 
+{ group: "Computers", category: "UGrad_Unemp", measure: 192497 }, 
+{ group: "Computers", category: "Intship", measure: 178687 },
+{ group: "mathematics", category: "Grad_Emp", measure: 221551 }, 
+{ group: "mathematics", category: "UnderGrad_Emp", measure: 169920 }, 
+{ group: "mathematics", category: "Grad_UnEmp", measure: 145456 }, 
+{ group: "mathematics", category: "UGrad_Unemp", measure: 145807 }, 
+{ group: "mathematics", category: "Intship", measure: 177459 },
+{ group: "Department of HR resources", category: "Grad_Emp", measure: 216779 }, 
+{ group: "Department of HR resources", category: "UnderGrad_Emp", measure: 238513 }, 
+{ group: "Department of HR resources", category: "Grad_UnEmp", measure: 211381 }, 
+{ group: "Department of HR resources", category: "UGrad_Unemp", measure: 171444 }, 
+{ group: "Department of HR resources", category: "Intship", measure: 152700 },
+{ group: "Department of Sciences", category: "Grad_Emp", measure: 211125 }, 
+{ group: "Department of Sciences", category: "UnderGrad_Emp", measure: 206223 }, 
+{ group: "Department of Sciences", category: "Grad_UnEmp", measure: 189359 }, 
+{ group: "Department of Sciences", category: "UGrad_Unemp", measure: 197860 }, 
+{ group: "Department of Sciences", category: "Intship", measure: 161171 },
+{ group: "Department of music", category: "Grad_Emp", measure: 191512 }, 
+{ group: "Department of music", category: "UnderGrad_Emp", measure: 238178 }, 
+{ group: "Department of music", category: "Grad_UnEmp", measure: 186470 }, 
+{ group: "Department of music", category: "UGrad_Unemp", measure: 190464 }, 
+{ group: "Department of music", category: "Intship", measure: 119956 },
+{ group: "Biology Department ", category: "Grad_Emp", measure: 177069 }, 
+{ group: "Biology Department ", category: "UnderGrad_Emp", measure: 130893 }, 
+{ group: "Biology Department ", category: "Grad_UnEmp", measure: 90639 }, 
+{ group: "Biology Department ", category: "UGrad_Unemp", measure: 95662 }, 
+{ group: "Biology Department ", category: "Intship", measure: 137511 },
+{ group: "Data anayltics Department ", category: "Grad_Emp", measure: 137667 }, 
+{ group: "Data anayltics Department ", category: "UnderGrad_Emp", measure: 112317 }, 
+{ group: "Data anayltics Department ", category: "Grad_UnEmp", measure: 105980 }, 
+{ group: "Data anayltics Department ", category: "UGrad_Unemp", measure: 93015 }, 
+{ group: "Data anayltics Department ", category: "Intship", measure: 83060 },
+{ group: "Psychology Department", category: "Grad_Emp", measure: 136638 }, 
+{ group: "Psychology Department", category: "UnderGrad_Emp", measure: 110132 }, 
+{ group: "Psychology Department", category: "Grad_UnEmp", measure: 83594 }, 
+{ group: "Psychology Department", category: "UGrad_Unemp", measure: 61202 }, 
+{ group: "Psychology Department", category: "Intship", measure: 69954 },
+{ group: "Health Department", category: "Grad_Emp", measure: 83360 }, 
+{ group: "Health Department", category: "UnderGrad_Emp", measure: 84089 }, 
+{ group: "Health Department", category: "Grad_UnEmp", measure: 53566 }, 
+{ group: "Health Department", category: "UGrad_Unemp", measure: 59546 }, 
+{ group: "Health Department", category: "Intship", measure: 49719 },
+]
+;
+ 
+
+var group = "All";
+ 
+function datasetBarChosen(group) {
+	var ds = [];
+	for (x in datasetBarChart) {
+		 if(datasetBarChart[x].group==group){
+		 	ds.push(datasetBarChart[x]);
+		 } 
+		}
+	return ds;
+}
+ 
+ 
+function dsBarChartBasics() {
+ 
+		var margin = {top: 30, right: 5, bottom: 20, left: 50},
+		width = 500 - margin.left - margin.right,
+	   height = 250 - margin.top - margin.bottom,
+		colorBar = d3.scale.category20(),
+		barPadding = 1
+		;
+		
+		return {
+			margin : margin, 
+			width : width, 
+			height : height, 
+			colorBar : colorBar, 
+			barPadding : barPadding
+		}			
+		;
+}
+ 
+function dsBarChart() {
+ 
+	var firstDatasetBarChart = datasetBarChosen(group);         	
+	
+	var basics = dsBarChartBasics();
+	
+	var margin = basics.margin,
+		width = basics.width,
+	   height = basics.height,
+		colorBar = basics.colorBar,
+		barPadding = basics.barPadding
+		;
+					
+	var 	xScale = d3.scale.linear()
+						.domain([0, firstDatasetBarChart.length])
+						.range([0, width])
+						;
+						  
+	var yScale = d3.scale.linear()
+			
+		   .domain([0, d3.max(firstDatasetBarChart, function(d) { return d.measure; })])
+		   .range([height, 0])
+		   ;
+
+	
+	var svg = d3.select("#barChart")
+			.append("svg")
+		    .attr("width", width + margin.left + margin.right)
+		    .attr("height", height + margin.top + margin.bottom)
+		    .attr("id","barChartPlot")
+		    ;
+	
+	var plot = svg
+		    .append("g")
+		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		    ;
+	            
+	plot.selectAll("rect")
+		   .data(firstDatasetBarChart)
+		   .enter()
+		   .append("rect")
+			.attr("x", function(d, i) {
+			    return xScale(i);
+			})
+		   .attr("width", width / firstDatasetBarChart.length - barPadding)   
+			.attr("y", function(d) {
+			    return yScale(d.measure);
+			})  
+			.attr("height", function(d) {
+			    return height-yScale(d.measure);
+			})
+			.attr("fill", "lightgrey")
+			;
+	
+	plot.selectAll("text")
+	.data(firstDatasetBarChart)
+	.enter()
+	.append("text")
+	.text(function(d) {
+			return formatAsInteger(d3.round(d.measure));
+	})
+	.attr("text-anchor", "middle")
+	.attr("x", function(d, i) {
+			return (i * (width / firstDatasetBarChart.length)) + ((width / firstDatasetBarChart.length - barPadding) / 2);
+	})
+	.attr("y", function(d) {
+			return yScale(d.measure) + 14;
+	})
+	.attr("class", "yAxis")
+	;
+	
+	var xLabels = svg
+		    .append("g")
+		    .attr("transform", "translate(" + margin.left + "," + (margin.top + height)  + ")")
+		    ;
+	
+	xLabels.selectAll("text.xAxis")
+		  .data(firstDatasetBarChart)
+		  .enter()
+		  .append("text")
+		  .text(function(d) { return d.category;})
+		  .attr("text-anchor", "middle")
+						   .attr("x", function(d, i) {
+						   		return (i * (width / firstDatasetBarChart.length)) + ((width / firstDatasetBarChart.length - barPadding) / 2);
+						   })
+		  .attr("y", 15)
+		  .attr("class", "xAxis");
+	 
+	
+	
+	svg.append("text")
+		.attr("x", (width + margin.left + margin.right)/2)
+		.attr("y", 15)
+		.attr("class","title")				
+		.attr("text-anchor", "middle")
+		.text("Employement Summary")
+		;
+}
+ 
+dsBarChart();
+ 
+ 
+ 
+function updateBarChart(group, colorChosen) {
+	
+		var currentDatasetBarChart = datasetBarChosen(group);
+		
+		var basics = dsBarChartBasics();
+	
+		var margin = basics.margin,
+			width = basics.width,
+		   height = basics.height,
+			colorBar = basics.colorBar,
+			barPadding = basics.barPadding
+			;
+		
+		var 	xScale = d3.scale.linear()
+			.domain([0, currentDatasetBarChart.length])
+			.range([0, width])
+			;
+		
+			
+		var yScale = d3.scale.linear()
+	      .domain([0, d3.max(currentDatasetBarChart, function(d) { return d.measure; })])
+	      .range([height,0])
+	      ;
+	      
+	   var svg = d3.select("#barChart svg");
+	      
+	   var plot = d3.select("#barChartPlot")
+	   	.datum(currentDatasetBarChart)
+		   ;
+	
+	  		
+	  	plot.selectAll("rect")
+	      .data(currentDatasetBarChart)
+	      .transition()
+			.duration(750)
+			.attr("x", function(d, i) {
+			    return xScale(i);
+			})
+		   .attr("width", width / currentDatasetBarChart.length - barPadding)   
+			.attr("y", function(d) {
+			    return yScale(d.measure);
+			})  
+			.attr("height", function(d) {
+			    return height-yScale(d.measure);
+			})
+			.attr("fill", colorChosen)
+			;
+		
+		plot.selectAll("text.yAxis") 
+			.data(currentDatasetBarChart)
+			.transition()
+			.duration(750)
+		   .attr("text-anchor", "middle")
+		   .attr("x", function(d, i) {
+		   		return (i * (width / currentDatasetBarChart.length)) + ((width / currentDatasetBarChart.length - barPadding) / 2);
+		   })
+		   .attr("y", function(d) {
+		   		return yScale(d.measure) + 14;
+		   })
+		   .text(function(d) {
+				return formatAsInteger(d3.round(d.measure));
+		   })
+		   .attr("class", "yAxis")					 
+		;
+		
+ 
+		svg.selectAll("text.title") 
+			.attr("x", (width + margin.left + margin.right)/2)
+			.attr("y", 15)
+			.attr("class","title")				
+			.attr("text-anchor", "middle")
+			.text(group + " Department Summary")
+		;
+}
+ 
+ 
+/* LINE CHART
+*/
+ 
+var datasetLineChart = [
+{ group: "All", category: Grad_Emp, measure: 62607 }, 
+{ group: "All", category: UnderGrad_Emp, measure: 60146 }, 
+{ group: "All", category: Grad_UnEmp, measure: 57825 }, 
+{ group: "All", category: UGrad_Unemp, measure: 57001 }, 
+{ group: "All", category: Intship, measure: 51930 }, 
+{ group: "Arts", category: Grad_Emp, measure: 8019}, 
+{ group: "Arts", category: UnderGrad_Emp, measure: 7986 }, 
+{ group: "Arts", category: Grad_UnEmp, measure: 8019 }, 
+{ group: "Arts", category: UGrad_Unemp, measure: 8000 }, 
+{ group: "Arts", category: Intship, measure: 8008 }, 
+{ group: "Accounting", category: Grad_Emp, measure: 11144 }, 
+{ group: "Accounting", category: UnderGrad_Emp, measure: 11144 }, 
+{ group: "Accounting", category: Grad_UnEmp, measure: 11144 }, 
+{ group: "Accounting", category: UGrad_Unemp, measure: 11144 }, 
+{ group: "Accounting", category: Intship, measure: 11144 }, 
+{ group: "Business", category: Grad_Emp, measure: 3944 }, 
+{ group: "Business", category: UnderGrad_Emp, measure: 3981 }, 
+{ group: "Business", category: Grad_UnEmp, measure: 2976 }, 
+{ group: "Business", category: UGrad_Unemp, measure: 2976 }, 
+{ group: "Business", category: Intship, measure: 1488 }, 
+{ group: "Law", category: Grad_Emp, measure: 6495 }, 
+{ group: "Law", category: UnderGrad_Emp, measure: 4065 }, 
+{ group: "Law", category: Grad_UnEmp, measure: 3433 }, 
+{ group: "Law", category: UGrad_Unemp, measure: 2774 }, 
+{ group: "Law", category: Intship, measure: 2766 }, 
+{ group: "Finance Department", category: Grad_Emp, measure: 2442 }, 
+{ group: "Finance Department", category: UnderGrad_Emp, measure: 2442 }, 
+{ group: "Finance Department", category: Grad_UnEmp, measure: 2442 }, 
+{ group: "Finance Department", category: UGrad_Unemp, measure: 2274 }, 
+{ group: "Finance Department", category: Intship, measure: 1137 }, 
+{ group: "Agriculture and Natural resources", category: Intship, measure: 4614 }, 
+{ group: "Agriculture and Natural resources", category: UGrad_Unemp, measure: 4614 }, 
+{ group: "Agriculture and Natural resources", category: Grad_UnEmp, measure: 4614 }, 
+{ group: "Agriculture and Natural resources", category: UnderGrad_Emp, measure: 4614 }, 
+{ group: "Agriculture and Natural resources", category: Grad_Emp, measure: 4614 }, 
+{ group: "Computers", category: Grad_Emp, measure: 2050 }, 
+{ group: "Computers", category: UnderGrad_Emp, measure: 1993 }, 
+{ group: "Computers", category: Grad_UnEmp, measure: 1975 }, 
+{ group: "Computers", category: UGrad_Unemp, measure: 1952 }, 
+{ group: "Computers", category: Intship, measure: 1928 },
+{ group: "mathematics", category: Grad_Emp, measure: 3520}, 
+{ group: "mathematics", category: UnderGrad_Emp, measure: 3508}, 
+{ group: "mathematics", category: Grad_UnEmp, measure: 3505}, 
+{ group: "mathematics", category: UGrad_Unemp, measure: 3502}, 
+{ group: "mathematics", category: Intship, measure: 3496},
+{ group: "Department of HR resources", category: Grad_Emp, measure: 2806 }, 
+{ group: "Department of HR resources", category: UnderGrad_Emp, measure: 2806 }, 
+{ group: "Department of HR resources", category: Grad_UnEmp, measure: 2806 }, 
+{ group: "Department of HR resources", category: UGrad_Unemp, measure: 2806 }, 
+{ group: "Department of HR resources", category: Intship, measure: 2806 },
+{ group: "Department of Sciences", category: Grad_Emp, measure: 3119 }, 
+{ group: "Department of Sciences", category: UnderGrad_Emp, measure: 3119 }, 
+{ group: "Department of Sciences", category: Grad_UnEmp, measure: 3119 }, 
+{ group: "Department of Sciences", category: UGrad_Unemp, measure: 3119 }, 
+{ group: "Department of Sciences", category: Intship, measure: 3119 },
+{ group: "Department of music", category: Grad_Emp, measure: 4436 }, 
+{ group: "Department of music", category: UnderGrad_Emp, measure: 4498 }, 
+{ group: "Department of music", category: Grad_UnEmp, measure: 4017 }, 
+{ group: "Department of music", category: UGrad_Unemp, measure: 4053 }, 
+{ group: "Department of music", category: Intship, measure: 1491 },
+{ group: "Biology Department ", category: Grad_Emp, measure: 2983 }, 
+{ group: "Biology Department ", category: UnderGrad_Emp, measure: 2976 }, 
+{ group: "Biology Department ", category: Grad_UnEmp, measure: 2976 }, 
+{ group: "Biology Department ", category: UGrad_Unemp, measure: 2976 }, 
+{ group: "Biology Department ", category: Intship, measure: 2976 },
+{ group: "Data anayltics Department ", category: Grad_Emp, measure: 1782 }, 
+{ group: "Data anayltics Department ", category: UnderGrad_Emp, measure: 1782 }, 
+{ group: "Data anayltics Department ", category: Grad_UnEmp, measure: 1782 }, 
+{ group: "Data anayltics Department ", category: UGrad_Unemp, measure: 1782 }, 
+{ group: "Data anayltics Department ", category: Intship, measure: 1781 },
+{ group: "Psychology Department", category: Grad_Emp, measure: 2649 }, 
+{ group: "Psychology Department", category: UnderGrad_Emp, measure: 2736 }, 
+{ group: "Psychology Department", category: Grad_UnEmp, measure: 2855 }, 
+{ group: "Psychology Department", category: UGrad_Unemp, measure: 2918 }, 
+{ group: "Psychology Department", category: Intship, measure: 3045 },
+{ group: "Health Department", category: Grad_Emp, measure: 2554 }, 
+{ group: "Health Department", category: UnderGrad_Emp, measure: 2496 }, 
+{ group: "Health Department", category: Grad_UnEmp, measure: 2162 }, 
+{ group: "Health Department", category: UGrad_Unemp, measure: 2142 }, 
+{ group: "Health Department", category: Intship, measure: 2131 },
+
+]
+;
+ 
+
+var group = "All";
+ 
+function datasetLineChartChosen(group) {
+	var ds = [];
+	for (x in datasetLineChart) {
+		 if(datasetLineChart[x].group==group){
+		 	ds.push(datasetLineChart[x]);
+		 } 
+		}
+	return ds;
+}
+ 
+function dsLineChartBasics() {
+ 
+	var margin = {top: 20, right: 10, bottom: 0, left: 50},
+	    width = 500 - margin.left - margin.right,
+	    height = 150 - margin.top - margin.bottom
+	    ;
+		
+		return {
+			margin : margin, 
+			width : width, 
+			height : height
+		}			
+		;
+}
+ 
+ 
+function dsLineChart() {
+ 
+	var firstDatasetLineChart = datasetLineChartChosen(group);    
+	
+	var basics = dsLineChartBasics();
+	
+	var margin = basics.margin,
+		width = basics.width,
+	   height = basics.height
+		;
+ 
+	var xScale = d3.scale.linear()
+	    .domain([0, firstDatasetLineChart.length-1])
+	    .range([0, width])
+	    ;
+ 
+	var yScale = d3.scale.linear()
+	    .domain([0, d3.max(firstDatasetLineChart, function(d) { return d.measure; })])
+	    .range([height, 0])
+	    ;
+	
+	var line = d3.svg.line()
+	    .x(function(d, i) { return xScale(i); })
+	    .y(function(d) { return yScale(d.measure); })
+	    ;
+	
+	var svg = d3.select("#lineChart").append("svg")
+	    .datum(firstDatasetLineChart)
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+	   
+	    
+	var plot = svg
+	    .append("g")
+	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+	    .attr("id", "lineChartPlot")
+	    ;
+ 
+		
+	var dsLength=firstDatasetLineChart.length;
+ 
+	plot.append("text")
+        .text(firstDatasetLineChart[0].measure)
+		.attr("id","lineChartTitle2")
+		.attr("x",width/2)
+		.attr("y",height/2)	
+		;
+	
+	    
+	plot.append("path")
+	    .attr("class", "line")
+	    .attr("d", line)	
+		.attr("stroke", "lightgrey")
+	    ;
+	  
+	plot.selectAll(".dot")
+	    .data(firstDatasetLineChart)
+	  	 .enter().append("circle")
+	    .attr("class", "dot")
+	    .attr("fill", function (d) { return d.measure==d3.min(firstDatasetLineChart, function(d) { return d.measure; }) ? "red" : (d.measure==d3.max(firstDatasetLineChart, function(d) { return d.measure; }) ? "green" : "white") } )
+	    .attr("cx", line.x())
+	    .attr("cy", line.y())
+	    .attr("r", 3.5)
+	    .attr("stroke", "lightgrey")
+	    .append("title")
+	    .text(function(d) { return d.category + ": " + formatAsInteger(d.measure); })
+	    ;
+ 
+	svg.append("text")
+		.text("count for their body structure")
+		.attr("id","lineChartTitle1")	
+		.attr("x",margin.left + ((width + margin.right)/2))
+		.attr("y", 10)
+		;
+ 
+}
+ 
+dsLineChart();
+ 
+function updateLineChart(group, colorChosen) {
+ 
+	var currentDatasetLineChart = datasetLineChartChosen(group);   
+ 
+	var basics = dsLineChartBasics();
+	
+	var margin = basics.margin,
+		width = basics.width,
+	   height = basics.height
+		;
+ 
+	var xScale = d3.scale.linear()
+	    .domain([0, currentDatasetLineChart.length-1])
+	    .range([0, width])
+	    ;
+ 
+	var yScale = d3.scale.linear()
+	    .domain([0, d3.max(currentDatasetLineChart, function(d) { return d.measure; })])
+	    .range([height, 0])
+	    ;
+	
+	var line = d3.svg.line()
+    .x(function(d, i) { return xScale(i); })
+    .y(function(d) { return yScale(d.measure); })
+    ;
+ 
+   var plot = d3.select("#lineChartPlot")
+   	.datum(currentDatasetLineChart)
+	   ;
+	   
+	var dsLength=currentDatasetLineChart.length;
+	
+	plot.select("text")
+		.text(currentDatasetLineChart[0].measure)
+		;
+
+	   
+	plot
+	.select("path")
+		.transition()
+		.duration(750)			    
+	   .attr("class", "line")
+	   .attr("d", line)	
+		.attr("stroke", colorChosen)
+	   ;
+	   
+	var path = plot
+		.selectAll(".dot")
+	   .data(currentDatasetLineChart)
+	   .transition()
+		.duration(750)
+	   .attr("class", "dot")
+	   .attr("fill", function (d) { return d.measure==d3.min(currentDatasetLineChart, function(d) { return d.measure; }) ? "red" : (d.measure==d3.max(currentDatasetLineChart, function(d) { return d.measure; }) ? "green" : "white") } )
+	   .attr("cx", line.x())
+	   .attr("cy", line.y())
+	   .attr("r", 3.5)
+	   .attr("stroke", colorChosen)
+	   ;
+	   
+	   path
+	   .selectAll("title")
+	   .text(function(d) { return d.category + ": " + formatAsInteger(d.measure); })	 
+	   ;  
+ 
+}
+ 
+    </script>
+  </body>
+</html>
+ 
+

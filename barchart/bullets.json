@@ -1,0 +1,7 @@
+[
+  {"title":"Enrolled","subtitle":"#100's","ranges":[150,225,300],"measures":[220,270],"markers":[250]},
+  {"title":"Graduated","subtitle":"#100's","ranges":[120,125,130],"measures":[121,123],"markers":[126]},
+  {"title":"Unemployed","subtitle":"#100's","ranges":[35,50,60],"measures":[10,32],"markers":[55]},
+  {"title":"Employed","subtitle":"#100's","ranges":[140,200,250],"measures":[100,165],"markers":[210]},
+  {"title":"Dropped","subtitle":"#100's","ranges":[30.5,40.5,50.5],"measures":[30,40,70],"markers":[40]}
+]

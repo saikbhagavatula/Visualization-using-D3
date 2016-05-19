@@ -1,0 +1,131 @@
+{
+ "name": "flaredisciplines",
+ "children": [
+ 
+ 
+  
+  {
+   "name": "EmploymentDetails",
+   "children": [
+    {
+     "name": "Engineering",
+     "children": [
+      {"name": "MechanicalEngineering", "size": 9669},
+      {"name": "IndustrialProduction", "size": 1475},
+      {"name": "ElectricalEngineering", "size": 9471},
+      {"name": "ArchitecturalEngineering", "size": 1145},
+      {"name": "PetroleumEngineering", "size": 640},
+	  {"name": "CivilEngineering", "size": 6054},
+	  {"name": "ChemicalEngineering", "size": 300},
+	  {"name": "NuclearEngineering", "size": 800},
+	  {"name": "BioMedicalEngineering", "size": 7743}
+     ]
+    },
+    {
+     "name": "Computers&Mathematics",
+     "children": [
+      {"name": "CommunicationTechnologies", "size": 7512},
+      {"name": "ComputerProgrammingAndDataProcessing", "size": 4521},
+      {"name": "ComputerNetworkingAndTelecommunications", "size": 9626},
+      {"name": "ComputerAndInformationSystems", "size": 7276},
+      {"name": "InformationSciences", "size": 8493},
+      {"name": "ComputerScience", "size": 9995},
+      {"name": "MathematicsAndComputerScience", "size": 305},
+      {"name": "AppliedMathematics", "size": 1472},
+      {"name": "Mathematics", "size": 7722}
+     ]
+    },
+    {
+     "name": "Arts",
+     "children": [
+      {"name": "CommericialArtAndGraphicDesign", "size": 2250},
+      {"name": "FineArts", "size":5249},
+      {"name": "FilmVideoAndPhotographicArts", "size": 1854},
+      {"name": "StudioArts", "size": 2465},
+      {"name": "DramaAndTheatreArts", "size": 3546},
+	  {"name": "Music", "size": 6927}     
+     ]
+    },
+    {
+     "name": "Business",
+     "children": [
+      {"name": "Accounting", "size": 4007},
+      {"name": "Finance", "size": 3632},
+      {"name": "HospitalityManagement", "size": 1437},
+      {"name": "HumanResourcesAndPersonalManagement", "size": 1117}
+     ]
+    },
+    {
+     "name": "Health",
+     "children": [
+      {"name": "Nursing", "size": 2236},
+      {"name": "CommunityAndPublicHealth", "size": 1654},
+      {"name": "HealthAndMedicalAdministrativeServices", "size": 1867}
+     ]
+    },
+	{
+     "name": "PhysicalSciences",
+     "children": [
+      {"name": "Oceanography", "size": 598},
+      {"name": "GeologyAndEarthScience", "size": 1165},
+      {"name": "Chemistry", "size": 3093},
+	  {"name": "Physics", "size": 1524}
+     ]
+    },
+	{
+     "name": "Law&PublicPolicy",
+     "children": [
+      {"name": "CourtReporting", "size": 163},
+      {"name": "CriminalJusticeAndFireProtection", "size": 1314},
+      {"name": "PublicAdministration", "size": 398},
+	  {"name": "PublicPolicy", "size": 124},
+	  {"name": "Pre-LawAndLegalStudies", "size": 2543}
+     ]
+    },
+	{
+     "name": "Agriculture&NaturalResources",
+     "children": [
+      {"name": "AgricultureProductionAndManagement", "size": 1386},
+      {"name": "GeneralAgriculture", "size": 2454},
+      {"name": "Forestry", "size": 1566},
+	  {"name": "NaturalResourcesManagement", "size": 2361},
+	  {"name": "PlantScienceAndAgronomy", "size": 2265},
+	  {"name": "SoilScience", "size": 237},
+	  {"name": "AnimalSciences", "size": 4719},
+	  {"name": "FoodScience", "size": 1131}
+     ]
+    },
+	{
+     "name": "Education",
+     "children": [
+      {"name": "ElementaryEducation", "size": 5986},
+      {"name": "GeneralEducation", "size": 6352},
+	  {"name": "TeacherEducation", "size": 2378},
+	  {"name": "LibraryScience", "size": 1351},
+	  {"name": "LanguageAndDramaEducation", "size": 4653}
+     ]
+    },
+	{
+     "name": "Communication&Journalism",
+     "children": [
+      {"name": "AdvertisingAndPublicRelations", "size": 1462},
+      {"name": "MassMedia", "size": 2342},
+      {"name": "Communication", "size": 4765},
+	  {"name": "Journalism", "size": 3636}
+     ]
+    },
+	{
+     "name": "Biology&LifeScience",
+     "children": [
+      {"name": "EnvironmentalScience", "size": 2321},
+      {"name": "Ecology", "size": 1322},
+      {"name": "MicroBiology", "size": 3436},
+	  {"name": "Botany", "size": 1231},
+	  {"name": "Physiology", "size": 7984},
+	  {"name": "Zoology", "size": 4658}
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+{
+ "name": "flaredisciplines",
+ "children": [
+ 
+ 
+  
+  {
+   "name": "Expenditures",
+   "children": [
+    {
+     "name": "Mohan",
+     "children": [
+      {"name": "Grocery", "size": 9669},
+      {"name": "Dine Out", "size": 1475},
+      {"name": "Gas and Power", "size": 9471},
+      {"name": "Car and Fuel", "size": 1145},
+      {"name": "Uber", "size": 640},
+	  {"name": "Rent", "size": 6054},
+	  {"name": "Utilities", "size": 300},
+	  {"name": "Shopping", "size": 800},
+	  {"name": "Fee and Misc", "size": 7743}
+     ]
+    },
+    {
+     "name": "Vamsi",
+     "children": [
+      {"name": "Grocery", "size": 751},
+      {"name": "Dine Out", "size": 4521},
+      {"name": "Gas and Power", "size": 9626},
+      {"name": "Car", "size": 7276},
+      {"name": "Fee and Misc", "size": 8493},
+      {"name": "Shopping", "size": 9995},
+      {"name": "Uber", "size": 305},
+      {"name": "Deficit", "size": 1472},
+      {"name": "Loan EMI", "size": 7722}
+     ]
+    },
+    {
+     "name": "Tarun",
+     "children": [
+      {"name": "Grocery", "size": 2250},
+      {"name": "Dine Out", "size":5249},
+      {"name": "Gas and Power", "size": 1854},
+      {"name": "Shopping", "size": 2465},
+      {"name": "Fine", "size": 3546},
+	  {"name": "Fee and Misc", "size": 6927}     
+     ]
+    },
+	{
+     "name": "Sai",
+     "children": [
+      {"name": "Grocery", "size": 1386},
+      {"name": "Dine Out", "size": 2454},
+      {"name": "Gas and Power", "size": 1566},
+	  {"name": "Shopping", "size": 2361},
+	  {"name": "Loan EMI", "size": 2265},
+	  {"name": "Fee and Misc", "size": 237},
+	  {"name": "Travel", "size": 4719},
+	  {"name": "Stationery", "size": 1131}
+     ]
+    },
+   ]
+  }
+ ]
+}
